@@ -1,0 +1,68 @@
+@page "/weather"
+@attribute [StreamRendering(true)]
+@inject ApiClient WeatherApi
+@rendermode InteractiveServer
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates showing data loaded from a backend API service.</p>
+
+@if (!loaded)
+{
+    <p><em>Loading...</em></p>
+}
+else if (unauthorized)
+{
+    <div class="alert alert-warning">
+        <strong>Authentication Required</strong>
+        <p>Please <a href="/login">login</a> to view weather data.</p>
+    </div>
+}
+else if (forecasts == null || forecasts.Length == 0)
+{
+    <p><em>No data available.</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th aria-label="Temperature in Celsius">Temp. (C)</th>
+                <th aria-label="Temperature in Fahrenheit">Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+    private bool unauthorized = false;
+    private bool loaded = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var result = await WeatherApi.GetWeatherAsync();
+            forecasts = result.Data;
+            unauthorized = result.Unauthorized;
+            loaded = true;
+            StateHasChanged();
+        }
+    }
+}

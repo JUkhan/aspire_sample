@@ -1,0 +1,46 @@
+# .NET
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio
+.vs/
+*.vsconfig
+launchSettings.json.user
+
+# Rider
+.idea/
+
+# User secrets
+secrets.json
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+publish/
+
+# NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# Node.js (for react-frontend)
+node_modules/
+dist/
+.env.local
+.env.*.local
+*.log
+npm-debug.log*
+
+# Aspire
+.aspire/
+nul

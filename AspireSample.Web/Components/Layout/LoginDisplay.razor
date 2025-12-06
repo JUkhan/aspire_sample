@@ -1,0 +1,22 @@
+@using AspireSample.Web.Auth
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<AuthorizeView>
+    <Authorized>
+        <span class="me-2">Hello, @context.User.Identity?.Name!</span>
+        <button class="btn btn-link text-decoration-none" @onclick="Logout">Logout</button>
+    </Authorized>
+    <NotAuthorized>
+        <a href="/login" class="btn btn-link text-decoration-none">Login</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/");
+    }
+}

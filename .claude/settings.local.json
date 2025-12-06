@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /b \"D:\\AspireSample\\AspireSample.AppHost\\*.cs\")",
+      "Bash(if not exist \"D:\\AspireSample\\IdentityService\\Services\" mkdir \"D:\\AspireSample\\IdentityService\\Services\")",
+      "Bash(del \"D:\\AspireSample\\AspireSample.Web\\Auth\\AuthHeaderHandler.cs\")",
+      "Bash(npm create vite@latest react-frontend -- --template react-ts)",
+      "Bash(npm install:*)",
+      "WebSearch"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

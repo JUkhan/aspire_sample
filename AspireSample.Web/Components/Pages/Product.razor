@@ -1,0 +1,64 @@
+@page "/product"
+@attribute [StreamRendering(true)]
+@inject ApiClient ProductApi
+@rendermode InteractiveServer
+
+<PageTitle>Product</PageTitle>
+
+<h1>Product</h1>
+
+<p>This component demonstrates showing data loaded from a backend API service.</p>
+
+@if (!loaded)
+{
+    <p><em>Loading...</em></p>
+}
+else if (unauthorized)
+{
+    <div class="alert alert-warning">
+        <strong>Authentication Required</strong>
+        <p>Please <a href="/login">login</a> to view product data.</p>
+    </div>
+}
+else if (products == null || products.Length == 0)
+{
+    <p><em>No data available.</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th aria-label="Per product price">Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ProductData[]? products;
+    private bool unauthorized = false;
+    private bool loaded = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var result = await ProductApi.GetProductsAsync();
+            products = result.Data;
+            unauthorized = result.Unauthorized;
+            loaded = true;
+            StateHasChanged();
+        }
+    }
+}
