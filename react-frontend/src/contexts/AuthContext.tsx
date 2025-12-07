@@ -8,7 +8,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (username: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,30 +20,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Check for existing token on mount
     const token = localStorage.getItem('token');
+    const refreshToken = localStorage.getItem('refreshToken');
     const storedUser = localStorage.getItem('user');
 
-    if (token && storedUser) {
+    if (token && refreshToken && storedUser) {
       try {
         const userData = JSON.parse(storedUser) as AuthResponse;
-        // Check if token is expired
-        if (new Date(userData.expiration) > new Date()) {
-          setUser(userData);
-        } else {
-          // Token expired, clear storage
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-        }
+        // Even if access token is expired, we have refresh token
+        // The API interceptor will handle refreshing automatically
+        setUser(userData);
       } catch {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        clearStorage();
       }
     }
     setIsLoading(false);
   }, []);
 
+  const clearStorage = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+  };
+
   const login = async (username: string, password: string) => {
     const response = await authApi.login({ username, password });
     localStorage.setItem('token', response.token);
+    localStorage.setItem('refreshToken', response.refreshToken);
     localStorage.setItem('user', JSON.stringify(response));
     setUser(response);
   };
@@ -51,13 +53,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (username: string, email: string, password: string) => {
     const response = await authApi.register({ username, email, password });
     localStorage.setItem('token', response.token);
+    localStorage.setItem('refreshToken', response.refreshToken);
     localStorage.setItem('user', JSON.stringify(response));
     setUser(response);
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const logout = async () => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken) {
+      try {
+        await authApi.logout(refreshToken);
+      } catch {
+        // Ignore logout errors
+      }
+    }
+    clearStorage();
     setUser(null);
   };
 

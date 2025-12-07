@@ -10,6 +10,16 @@ public class User
     public DateTime CreatedAt { get; set; }
 }
 
+public class RefreshToken
+{
+    public string Token { get; set; } = string.Empty;
+    public Guid UserId { get; set; }
+    public DateTime ExpiresAt { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public bool IsRevoked { get; set; }
+}
+
 public record RegisterRequest(string Username, string Email, string Password);
 public record LoginRequest(string Username, string Password);
-public record AuthResponse(string Token, DateTime Expiration, string Username, List<string> Roles);
+public record RefreshTokenRequest(string RefreshToken);
+public record AuthResponse(string Token, string RefreshToken, DateTime Expiration, string Username, List<string> Roles);

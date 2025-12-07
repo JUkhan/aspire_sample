@@ -58,9 +58,9 @@ app.MapPost("/auth/register", (RegisterRequest request, UserStore userStore, Tok
     }
 
     var user = userStore.CreateUser(request.Username, request.Email, request.Password);
-    var (token, expiration) = tokenService.GenerateToken(user);
+    var (accessToken, refreshToken, expiration) = tokenService.GenerateTokens(user);
 
-    return Results.Ok(new AuthResponse(token, expiration, user.Username, user.Roles));
+    return Results.Ok(new AuthResponse(accessToken, refreshToken, expiration, user.Username, user.Roles));
 })
 .WithName("Register")
 .AllowAnonymous();
@@ -75,11 +75,48 @@ app.MapPost("/auth/login", (LoginRequest request, UserStore userStore, TokenServ
         return Results.Unauthorized();
     }
 
-    var (token, expiration) = tokenService.GenerateToken(user);
+    var (accessToken, refreshToken, expiration) = tokenService.GenerateTokens(user);
 
-    return Results.Ok(new AuthResponse(token, expiration, user.Username, user.Roles));
+    return Results.Ok(new AuthResponse(accessToken, refreshToken, expiration, user.Username, user.Roles));
 })
 .WithName("Login")
+.AllowAnonymous();
+
+// Refresh token endpoint
+app.MapPost("/auth/refresh", (RefreshTokenRequest request, UserStore userStore, TokenService tokenService) =>
+{
+    var storedToken = tokenService.ValidateRefreshToken(request.RefreshToken);
+
+    if (storedToken is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var user = userStore.GetById(storedToken.UserId);
+
+    if (user is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    // Revoke old refresh token
+    tokenService.RevokeRefreshToken(request.RefreshToken);
+
+    // Generate new tokens
+    var (accessToken, refreshToken, expiration) = tokenService.GenerateTokens(user);
+
+    return Results.Ok(new AuthResponse(accessToken, refreshToken, expiration, user.Username, user.Roles));
+})
+.WithName("RefreshToken")
+.AllowAnonymous();
+
+// Logout endpoint (revoke refresh token)
+app.MapPost("/auth/logout", (RefreshTokenRequest request, TokenService tokenService) =>
+{
+    tokenService.RevokeRefreshToken(request.RefreshToken);
+    return Results.Ok(new { Message = "Logged out successfully" });
+})
+.WithName("Logout")
 .AllowAnonymous();
 
 // Validate token endpoint (for services to verify tokens)

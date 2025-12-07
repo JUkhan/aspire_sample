@@ -30,6 +30,11 @@ public class UserStore
         return user;
     }
 
+    public User? GetById(Guid id)
+    {
+        return _users.Values.FirstOrDefault(u => u.Id == id);
+    }
+
     public bool UserExists(string username) => _users.ContainsKey(username);
 
     public User CreateUser(string username, string email, string password)
