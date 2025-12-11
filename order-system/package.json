@@ -1,0 +1,16 @@
+{
+  "name": "order-system",
+  "version": "1.0.0",
+  "scripts": {
+    "api": "node api-server.js",
+    "worker": "node worker.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "redis": "^4.6.7",
+    "socket.io": "^4.8.1",
+    "uuid": "^9.0.0"
+  }
+}
