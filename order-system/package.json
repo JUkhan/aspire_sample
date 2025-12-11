@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "api": "node api-server.js",
-    "worker": "node worker.js"
+    "worker": "node worker.js",
+    "start:api": "node api-server.js",
+    "start:worker": "node worker.js"
   },
   "dependencies": {
     "amqplib": "^0.10.3",

@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Weather from './pages/Weather';
 import Products from './pages/Product';
+import Orders from './pages/Orders';
 import './App.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="weather" element={<Weather />} />
             <Route path="products" element={<Products />} />
+            <Route path="orders" element={<Orders />} />
           </Route>
         </Routes>
       </BrowserRouter>

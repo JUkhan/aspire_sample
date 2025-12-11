@@ -1,5 +1,5 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
-import type { AuthResponse, LoginRequest, RegisterRequest, RefreshTokenRequest, WeatherForecast, Product } from '../types';
+import type { AuthResponse, LoginRequest, RegisterRequest, RefreshTokenRequest, WeatherForecast, Product, CreateOrderRequest, CreateOrderResponse } from '../types';
 
 // Get API URL from environment (Aspire passes this via services__api-gateway__http__0)
 const API_BASE_URL = import.meta.env.VITE_API_URL ||
@@ -135,5 +135,16 @@ export const productApi = {
     return response.data;
   },
 };
+
+// Order API
+export const orderApi = {
+  createOrder: async (data: CreateOrderRequest): Promise<CreateOrderResponse> => {
+    const response = await api.post<CreateOrderResponse>('/api/orders', data);
+    return response.data;
+  },
+};
+
+// Export API base URL for Socket.IO connection
+export const getApiBaseUrl = () => API_BASE_URL;
 
 export default api;

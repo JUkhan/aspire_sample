@@ -226,3 +226,59 @@ tr:hover {
 .home h1 {
   margin-bottom: 1rem;
 }
+
+/* Orders Page */
+.orders-page h1 {
+  margin-bottom: 1.5rem;
+}
+
+.order-actions {
+  margin-bottom: 1.5rem;
+}
+
+.orders-list {
+  margin-top: 1.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  color: #666;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-processing {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-completed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-failed {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status-retrying {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
