@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # Redis cache
+  cache:
+    image: redis:7.2
+    container_name: aspire-cache
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Python FastAPI service
+  python-api:
+    build:
+      context: ./PythonApi
+      dockerfile: Dockerfile
+    container_name: aspire-python-api
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      - cache
+
+  # .NET API Service
+  apiservice:
+    build:
+      context: .
+      dockerfile: AspirePythonDemo.ApiService/Dockerfile
+    container_name: aspire-dotnet-api
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__cache=cache:6379
+      - services__python-api__http__0=http://python-api:8000
+      - PythonApiUrl=http://python-api:8000
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    depends_on:
+      - cache
+      - python-api
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # .NET Web Frontend (optional)
+  webfrontend:
+    build:
+      context: .
+      dockerfile: AspirePythonDemo.Web/Dockerfile
+    container_name: aspire-web
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__cache=cache:6379
+      - services__apiservice__http__0=http://apiservice:8080
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    depends_on:
+      - cache
+      - apiservice
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # OpenTelemetry Collector (optional - for observability)
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: aspire-otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
+      - "8889:8889"   # Prometheus metrics
+
+networks:
+  default:
+    name: aspire-network
