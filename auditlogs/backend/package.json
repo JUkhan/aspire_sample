@@ -1,0 +1,19 @@
+{
+  "name": "audit-logs-backend",
+  "version": "1.0.0",
+  "description": "Audit logs system backend with Redis Streams",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "ioredis": "^5.3.2",
+    "socket.io": "^4.7.2",
+    "uuid": "^9.0.1"
+  }
+}
