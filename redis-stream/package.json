@@ -1,0 +1,19 @@
+{
+  "name": "redis-streams-example",
+  "version": "1.0.0",
+  "description": "Redis Streams example with consumer groups and reliable message processing",
+  "main": "redis-streams-example.js",
+  "scripts": {
+    "start": "node redis-streams-example.js",
+    "start2": "PORT=3001 node redis-streams-example.js",
+    "dev": "nodemon redis-streams-example.js"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "express": "^4.18.2",
+    "redis": "^4.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
