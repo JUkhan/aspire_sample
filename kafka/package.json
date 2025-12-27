@@ -1,0 +1,32 @@
+{
+  "name": "ecommerce-kafka",
+  "version": "1.0.0",
+  "description": "E-commerce Order Processing System with Kafka",
+  "private": true,
+  "workspaces": [
+    "services/*",
+    "frontend",
+    "shared"
+  ],
+  "scripts": {
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "install:all": "npm install && npm install --workspaces",
+    "start:api": "npm run start --workspace=api-gateway",
+    "start:payment": "npm run start --workspace=payment-service",
+    "start:inventory": "npm run start --workspace=inventory-service",
+    "start:shipping": "npm run start --workspace=shipping-service",
+    "start:analytics": "npm run start --workspace=analytics-service",
+    "start:frontend": "npm run dev --workspace=frontend",
+    "start:services": "concurrently \"npm run start:api\" \"npm run start:payment\" \"npm run start:inventory\" \"npm run start:shipping\" \"npm run start:analytics\"",
+    "start:all": "concurrently \"npm run start:services\" \"npm run start:frontend\"",
+    "replay:orders": "node scripts/replay-orders.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

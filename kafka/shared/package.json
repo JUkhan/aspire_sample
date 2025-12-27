@@ -1,0 +1,10 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "Shared utilities for E-commerce Kafka services",
+  "main": "index.js",
+  "scripts": {},
+  "dependencies": {
+    "kafkajs": "^2.2.4"
+  }
+}
